@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Streamer } from 'src/entities/streamer.entity';
 import { DataSource, Repository } from 'typeorm';
 
-export interface StreamerSearchCriteria {
+export interface StreamersSearchCriteria {
   limit: number;
   offset: number;
   name?: string;
@@ -18,13 +18,13 @@ export interface StreamerSearchCriteria {
 }
 
 @Injectable()
-export class StreamerRepository extends Repository<Streamer> {
+export class StreamersRepository extends Repository<Streamer> {
   constructor(private dataSource: DataSource) {
     super(Streamer, dataSource.createEntityManager());
   }
 
   async findAndCountByCriteria(
-    criteria: StreamerSearchCriteria,
+    criteria: StreamersSearchCriteria,
   ): Promise<[Streamer[], number]> {
     const qb = this.createQueryBuilder('s')
       .skip(criteria.offset)
