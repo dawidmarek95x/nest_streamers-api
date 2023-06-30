@@ -1,13 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-export type StreamingPlatform =
-  | 'twitch'
-  | 'youtube'
-  | 'tiktok'
-  | 'kick'
-  | 'rumble';
-
 export const streamingPlatforms: StreamingPlatform[] = [
   'twitch',
   'youtube',
@@ -15,7 +8,6 @@ export const streamingPlatforms: StreamingPlatform[] = [
   'kick',
   'rumble',
 ];
-
 @Entity('streamer')
 export class Streamer {
   @PrimaryGeneratedColumn({ type: 'integer', unsigned: true, name: 'id' })
@@ -29,8 +21,9 @@ export class Streamer {
   @Column('text', { nullable: true, name: 'pseudonym' })
   @ApiProperty({
     description: 'Another name the streamer is known by to hide his real name',
+    default: null,
   })
-  pseudonym: string;
+  pseudonym: string | null;
 
   @Column('text', { nullable: false, name: 'description' })
   @ApiProperty({ description: 'Streamer information' })
@@ -43,19 +36,21 @@ export class Streamer {
   })
   streamingPlatform: StreamingPlatform;
 
-  @Column('text', { nullable: false, name: 'image_url' })
+  @Column('text', { nullable: false, name: 'avatar_url' })
   @ApiProperty({ description: 'Streamer avatar URL' })
   avatarUrl: string;
 
   @Column('integer', { nullable: false, name: 'positive_votes' })
   @ApiProperty({
     description: 'The number of positive votes cast for the streamer',
+    default: 0,
   })
   positiveVotes: number;
 
   @Column('integer', { nullable: false, name: 'negative_votes' })
   @ApiProperty({
     description: 'The number of negative votes cast for the streamer',
+    default: 0,
   })
   negativeVotes: number;
 }

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { StreamersService } from './streamers.service';
 import { StreamersController } from './streamers.controller';
-import { StreamerRepository } from 'src/repositories/streamer.repository';
+import { StreamersRepository } from 'src/repositories/streamers.repository';
 import { Streamer } from 'src/entities/streamer.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   controllers: [StreamersController],
-  providers: [StreamersService, StreamerRepository],
+  providers: [StreamersService, StreamersRepository],
   imports: [TypeOrmModule.forFeature([Streamer])],
 })
 export class StreamersModule {}
