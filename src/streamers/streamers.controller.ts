@@ -1,11 +1,20 @@
 import {
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  ParseIntPipe,
+  Param,
+} from '@nestjs/common';
 import { StreamersService } from './streamers.service';
 import { Streamer } from 'src/entities/streamer.entity';
 import { ResponseMetadataModel } from 'src/swagger/ResponseMetadata.model';
@@ -151,6 +160,50 @@ export class StreamersController {
       totalResults,
       currentLimit,
       currentOffset,
+      meta: {
+        status: 'success',
+      },
+    };
+  }
+
+  @Get(':streamerId')
+  @ApiOperation({
+    summary: 'Returns data of a specific streamer with given id',
+  })
+  @ApiParam({
+    name: 'streamerId',
+    description: 'The ID of the streamer whose data is to be fetched',
+    type: 'number',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Streamer data returned successfully.',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          $ref: getSchemaPath(Streamer),
+        },
+        meta: {
+          $ref: getSchemaPath(ResponseMetadataModel),
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Streamer not found.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async getStreamer(@Param('streamerId', ParseIntPipe) streamerId: number) {
+    const streamer = await this.streamersService.getOneById(streamerId);
+
+    return {
+      data: streamer,
       meta: {
         status: 'success',
       },

@@ -1,8 +1,7 @@
-import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
-import { CreateStreamerDto } from './create-streamer.dto';
-import { IsOptional, IsNumber } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsOptional } from 'class-validator';
 
-export class PartialUpdateStreamerDto extends PartialType(CreateStreamerDto) {
+export class UpdateStreamerVotesDto {
   @IsOptional()
   @IsNumber()
   @ApiPropertyOptional({

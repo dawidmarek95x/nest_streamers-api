@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { StreamersRepository } from 'src/repositories/streamers.repository';
 import { CreateStreamerDto } from './dto/create-streamer.dto';
@@ -78,6 +79,16 @@ export class StreamersService {
       currentLimit: limit,
       currentOffset: offset,
     };
+  }
+
+  async getOneById(streamerId: number) {
+    const streamer = await this.streamersRepository.findOneById(streamerId);
+
+    if (!streamer) {
+      throw new NotFoundException('Streamer not found.');
+    }
+
+    return streamer;
   }
 
   private async checkStreamerExistence(streamerDto: CheckStreamerExistenceDto) {
