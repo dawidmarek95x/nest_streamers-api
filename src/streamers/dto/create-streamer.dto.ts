@@ -1,9 +1,6 @@
 import { IsNotEmpty, IsString, IsOptional, IsIn } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  StreamingPlatform,
-  streamingPlatforms,
-} from 'src/entities/streamer.entity';
+import { streamingPlatforms } from 'src/entities/streamer.entity';
 
 export class CreateStreamerDto {
   @IsNotEmpty()

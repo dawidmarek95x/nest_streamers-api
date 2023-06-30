@@ -1,13 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-export type StreamingPlatform =
-  | 'twitch'
-  | 'youtube'
-  | 'tiktok'
-  | 'kick'
-  | 'rumble';
-
 export const streamingPlatforms: StreamingPlatform[] = [
   'twitch',
   'youtube',
@@ -15,7 +8,6 @@ export const streamingPlatforms: StreamingPlatform[] = [
   'kick',
   'rumble',
 ];
-
 @Entity('streamer')
 export class Streamer {
   @PrimaryGeneratedColumn({ type: 'integer', unsigned: true, name: 'id' })
