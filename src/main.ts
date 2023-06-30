@@ -5,7 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { Streamer } from './entities/streamer.entity';
 
-const APP_VERSION = '0.0.1';
+const APP_VERSION = '1.0.0';
 const MAX_UPLOAD_SIZE = '5mb';
 
 async function bootstrap() {
