@@ -9,6 +9,8 @@ import { CreateStreamerDto } from './dto/create-streamer.dto';
 import { Streamer } from 'src/entities/streamer.entity';
 import { isUrlValid } from 'src/utils/isUrlValid';
 import { UpdateStreamerDataDto } from './dto/update-streamer-data.dto';
+import { UpdateStreamerVotesDto } from './dto/update-streamer-votes.dto';
+import { isNonNegativeNumber } from 'src/utils/isNonNegativeNumber';
 
 @Injectable()
 export class StreamersService {
@@ -107,6 +109,30 @@ export class StreamersService {
       this.validateStreamerAvatarUrl(streamerDto.avatarUrl);
 
       streamer.avatarUrl = streamerDto.avatarUrl;
+    }
+
+    return await this.streamersRepository.save(streamer);
+  }
+
+  async updateVotesById(
+    streamerId: number,
+    streamerDto: UpdateStreamerVotesDto,
+  ) {
+    const streamer = await this.getOneById(streamerId);
+
+    if (streamerDto.positiveVotes !== undefined) {
+      if (isNonNegativeNumber(streamerDto.positiveVotes)) {
+        streamer.positiveVotes = streamerDto.positiveVotes;
+      } else {
+        throw new BadRequestException('positiveVotes cannot be negative.');
+      }
+    }
+    if (streamerDto.negativeVotes !== undefined) {
+      if (isNonNegativeNumber(streamerDto.negativeVotes)) {
+        streamer.negativeVotes = streamerDto.negativeVotes;
+      } else {
+        throw new BadRequestException('negativeVotes cannot be negative.');
+      }
     }
 
     return await this.streamersRepository.save(streamer);

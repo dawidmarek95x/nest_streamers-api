@@ -21,6 +21,7 @@ import { Streamer } from 'src/entities/streamer.entity';
 import { ResponseMetadataModel } from 'src/swagger/ResponseMetadata.model';
 import { CreateStreamerDto } from './dto/create-streamer.dto';
 import { UpdateStreamerDataDto } from './dto/update-streamer-data.dto';
+import { UpdateStreamerVotesDto } from './dto/update-streamer-votes.dto';
 
 @ApiTags('streamers')
 @Controller('streamers')
@@ -248,6 +249,50 @@ export class StreamersController {
     @Body() streamerDto: UpdateStreamerDataDto,
   ) {
     const updatedStreamer = await this.streamersService.updateDataById(
+      streamerId,
+      streamerDto,
+    );
+
+    return {
+      data: updatedStreamer,
+      meta: {
+        status: 'success',
+      },
+    };
+  }
+
+  @Patch(':streamerId/vote')
+  @ApiOperation({
+    summary: 'Updating votes for the selected streamer',
+  })
+  @ApiParam({
+    name: 'streamerId',
+    description: 'The ID of the streamer whose data is to be updated',
+    type: 'number',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Streamer votes have been successfully updated.',
+    type: Streamer,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Incorrect data or data type provided.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Streamer not found.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async updateStreamerVotes(
+    @Param('streamerId', ParseIntPipe) streamerId: number,
+    @Body() streamerDto: UpdateStreamerVotesDto,
+  ) {
+    const updatedStreamer = await this.streamersService.updateVotesById(
       streamerId,
       streamerDto,
     );
