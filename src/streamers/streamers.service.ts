@@ -7,15 +7,16 @@ import {
 import { StreamersRepository } from 'src/repositories/streamers.repository';
 import { CreateStreamerDto } from './dto/create-streamer.dto';
 import { Streamer } from 'src/entities/streamer.entity';
-import { CheckStreamerExistenceDto } from './dto/check-streamer-existence.dto';
 import { isUrlValid } from 'src/utils/isUrlValid';
+import { UpdateStreamerDataDto } from './dto/update-streamer-data.dto';
 
 @Injectable()
 export class StreamersService {
   constructor(private readonly streamersRepository: StreamersRepository) {}
 
   async createOne(streamerDto: CreateStreamerDto) {
-    await this.checkStreamerExistence(streamerDto);
+    await this.checkStreamerExistence(streamerDto.name);
+    this.validateStreamerAvatarUrl(streamerDto.avatarUrl);
 
     const streamer = new Streamer();
     const INITIAL_VOTES = 0;
@@ -24,13 +25,7 @@ export class StreamersService {
     streamer.pseudonym = streamerDto.pseudonym ?? null;
     streamer.description = streamerDto.description;
     streamer.streamingPlatform = streamerDto.streamingPlatform;
-
-    if (isUrlValid(streamerDto.avatarUrl)) {
-      streamer.avatarUrl = streamerDto.avatarUrl;
-    } else {
-      throw new BadRequestException('The avatar url is invalid');
-    }
-
+    streamer.avatarUrl = streamerDto.avatarUrl;
     streamer.positiveVotes = INITIAL_VOTES;
     streamer.negativeVotes = INITIAL_VOTES;
 
@@ -91,11 +86,36 @@ export class StreamersService {
     return streamer;
   }
 
-  private async checkStreamerExistence(streamerDto: CheckStreamerExistenceDto) {
+  async updateDataById(streamerId: number, streamerDto: UpdateStreamerDataDto) {
+    const streamer = await this.getOneById(streamerId);
+
+    if (streamerDto.name && streamer.name !== streamerDto.name) {
+      await this.checkStreamerExistence(streamerDto.name);
+      streamer.name = streamerDto.name;
+    }
+
+    if (streamerDto.pseudonym) {
+      streamer.pseudonym = streamerDto.pseudonym;
+    }
+    if (streamerDto.description) {
+      streamer.description = streamerDto.description;
+    }
+    if (streamerDto.streamingPlatform) {
+      streamer.streamingPlatform = streamerDto.streamingPlatform;
+    }
+    if (streamerDto.avatarUrl && streamer.avatarUrl !== streamerDto.avatarUrl) {
+      this.validateStreamerAvatarUrl(streamerDto.avatarUrl);
+
+      streamer.avatarUrl = streamerDto.avatarUrl;
+    }
+
+    return await this.streamersRepository.save(streamer);
+  }
+
+  private async checkStreamerExistence(streamerName: string) {
     const checkedStreamer = await this.streamersRepository.findOne({
       where: {
-        name: streamerDto.name,
-        streamingPlatform: streamerDto.streamingPlatform,
+        name: streamerName,
       },
     });
 
@@ -103,6 +123,12 @@ export class StreamersService {
       throw new ConflictException(
         'The streamer with the given details already exists.',
       );
+    }
+  }
+
+  private validateStreamerAvatarUrl(avatarUrl: string) {
+    if (!isUrlValid(avatarUrl)) {
+      throw new BadRequestException('The avatar url is invalid');
     }
   }
 }

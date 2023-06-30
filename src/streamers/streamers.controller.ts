@@ -14,11 +14,13 @@ import {
   Query,
   ParseIntPipe,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { StreamersService } from './streamers.service';
 import { Streamer } from 'src/entities/streamer.entity';
 import { ResponseMetadataModel } from 'src/swagger/ResponseMetadata.model';
 import { CreateStreamerDto } from './dto/create-streamer.dto';
+import { UpdateStreamerDataDto } from './dto/update-streamer-data.dto';
 
 @ApiTags('streamers')
 @Controller('streamers')
@@ -204,6 +206,54 @@ export class StreamersController {
 
     return {
       data: streamer,
+      meta: {
+        status: 'success',
+      },
+    };
+  }
+
+  @Patch(':streamerId')
+  @ApiOperation({
+    summary: 'Updating the data of the selected streamer',
+  })
+  @ApiParam({
+    name: 'streamerId',
+    description: 'The ID of the streamer whose data is to be updated',
+    type: 'number',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Streamer details have been successfully updated.',
+    type: Streamer,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Incorrect data or data type provided.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Streamer not found.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'The streamer with the given details already exists.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async updateStreamerData(
+    @Param('streamerId', ParseIntPipe) streamerId: number,
+    @Body() streamerDto: UpdateStreamerDataDto,
+  ) {
+    const updatedStreamer = await this.streamersService.updateDataById(
+      streamerId,
+      streamerDto,
+    );
+
+    return {
+      data: updatedStreamer,
       meta: {
         status: 'success',
       },
